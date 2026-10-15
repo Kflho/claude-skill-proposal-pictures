@@ -2,7 +2,7 @@
 name: proposal-pictures
 description: "中文技术申报书/技术方案的配图规范与校验（SVG 优先，可导入 PPT 编辑）：三类图版式（总体框架图、技术路线图、研究计划矩阵）、配色与字体令牌、文字与符号规范、指标表述规范，以及几何自检（文字越界/压线/拼串、禁用符号）、视觉语言一致性自检（同类元素锚点/字号/分隔线）与图↔文↔技术方案一致性核对。Triggers on: 画图, 画个图, 配图, 申报书配图, 技术路线图, 总体框架图, 研究计划图, 帮我画图, 检查图片, 检查图片文字, 文字重叠, 图片压线, 文字越界, 有的居中有的不居中, 视觉语言混乱, 连线混乱, 图不符合规范, 图片文字错乱, 图与正文不一致, draw diagram, proposal figure, technical roadmap figure, framework figure, check svg text, svg overlap, visual consistency, diagram conventions, 図の作成, 図のチェック, 図の文字, 그림 그리기, 그림 검사, 도표 작성, dibujar diagrama, revisar figura svg, convenciones de figuras."
 metadata:
-  version: "1.1.3"
+  version: "1.1.5"
   last_updated: "2026-10-15"
   status: active
   data_access_level: raw
@@ -94,6 +94,10 @@ python scripts/audit_text.py 图1_总体框架.svg                        # ④ 
     三条对齐铁律：**单元格里的东西一律居中于列心；通栏里的段落左对齐；通栏里的并列项等分居中**。
     同一角色的锚点/字号/分隔线处理不一致 = 视觉语言混乱（真实事故：一张矩阵图 28 处居中、17 处左对齐，
     几何自检全绿）。
+15. **先查证，不要重复造轮子**：① 术语查 [术语在线 termonline.cn](https://www.termonline.cn/about)（全国科技名词委）
+    → 单位查 GB 3100~3102 → 图表格式看目标期刊/出版社规范；② 图形语言与检查清单先看已有 skill
+    （`artifact-diagramming`、`opum-ai/diagram-skills`、`excalidraw-skill` 等）；③ 已有标准/工具能覆盖的，
+    就**引用它**，不要自建一套并行的规则表。自建的规则只保留"权威来源查不到"的部分，并标注"项目内约定"。
 
 ## 三类图的版式（详见 references/figure-types.md）
 
@@ -200,6 +204,10 @@ python scripts/audit_text.py 图1_总体框架.svg                        # ④ 
 
 ## Version Info
 
+- **v1.1.5（2026-10-15）**：硬规则新增第 15 条「先查证，不要重复造轮子」（术语→术语在线/GB 3100~3102，
+  图形→已有 skill）；`text-norms.md` §7 改为"先查权威再谈通俗化"（删掉自建术语表，改指向
+  [术语在线](https://www.termonline.cn/about)、ISO 704/GB/T 15237，只留"项目内约定"小节）；
+  新增 §9 竖排文字横向居中（`rotate(-90)` 的 0.30em 偏移与两种做法）。
 - **v1.1.4（2026-10-15）**：`text-norms.md` 增 §7 术语通俗化（"不可公度"→"量纲不可比"等）与
   §8 编号与标签：**优先用词，不用裸编号**（研究内容行表头写"组网建模"而非"4-1"）。
 - **v1.1.3（2026-10-15）**：新增 `scripts/check_connectors.py`——把"连线端点有没有贴在方框上"
