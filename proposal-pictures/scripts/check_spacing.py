@@ -78,11 +78,35 @@ def gaps(rects):
     return out
 
 
+
+def text_rhythm(root, scale, tol):
+    """单元格内文字节奏：同一方框内的文字，按 y 排序后相邻差应落在 scale 上
+    （表头→正文 38、行距 24、条目距 48；表头基线在框顶 +46 属位置不属间距，不参与）。"""
+    rs = rects_of(root)
+    flags, dist = [], Counter()
+    for r in rs:
+        if r[2] < 80 or r[3] < 60:
+            continue
+        ys = []
+        for el in root.iter(SVG + "text"):
+            x, y = num(el.get("x")), num(el.get("y"))
+            if r[0] <= x <= r[0] + r[2] and r[1] <= y <= r[1] + r[3]:
+                ys.append(y)
+        ys.sort()
+        for i in range(len(ys) - 1):
+            d = round(ys[i + 1] - ys[i], 1)
+            dist[d] += 1
+            if not any(abs(d - v) <= tol for v in scale):
+                flags.append((round(r[0]), round(r[1]), d, round(ys[i] - r[1], 1), round(ys[i + 1] - r[1], 1)))
+    return flags, dist
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="框间距审计")
     ap.add_argument("paths", nargs="+")
     ap.add_argument("--scale", default="12,24,40", help="允许的间距档位（px，逗号分隔）")
     ap.add_argument("--tol", type=float, default=3.0, help="与档位的允许偏差")
+    ap.add_argument("--text-scale", default="24,38,48",
+                    help="单元格内文字相邻差档位：行距 24 / 表头→正文 38 / 条目距 48")
     a = ap.parse_args()
     scale = [float(v) for v in a.scale.split(",")]
 
@@ -99,7 +123,12 @@ def main() -> int:
             ai, bj = rs[i], rs[j]
             print(f"   ⚠ {k} 间距 {d}px 不符合约定 {scale}："
                   f"{tuple(round(v) for v in ai)} ↔ {tuple(round(v) for v in bj)}")
-        if bad:
+        tf, td = text_rhythm(root, [float(v) for v in a.text_scale.split(",")], 1.0)
+        print("   单元格内文字间距：" + "  ".join(f"{d}px×{c}" for d, c in sorted(td.items())))
+        for cx, cy, d, y1, y2 in tf:
+            print(f"   ⚠ 单元格({cx},{cy}) 文字相邻差 {d}px 不在档位 {a.text_scale}："
+                  f"框顶+{y1} → 框顶+{y2}")
+        if bad or tf:
             rc = 1
     if rc == 0:
         print("✅ 所有相邻间距都落在约定档位上")
