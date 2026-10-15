@@ -34,14 +34,16 @@ sk_03/
 └── proposal-pictures/             ← skill 本体（可整个拷进 .claude/skills/）
     ├── SKILL.md                  入口：触发条件、五步工作流、硬规则、自检脚本用法
     ├── references/               按需加载的细节（渐进披露）
-    │   ├── figure-types.md       三类图版式：总体框架图 / 技术路线图 / 研究计划矩阵
+    │   ├── figure-types.md       三类图版式 + 连线规范（§5）+ 设计系统（§6）
     │   ├── style-tokens.md       配色、字体、字号、圆角、箭头、安全边距
     │   ├── text-norms.md         文字规范：术语、称谓、符号禁用表、换行、全半角
     │   ├── indicator-wording.md  指标表述规范：单位、基线、限定条件、成对约束、口径
-    │   └── verification.md       自检流程与脚本用法、验收清单
+    │   ├── verification.md       五步自检流程与脚本用法、验收清单
+    │   └── case-notes.md         案例复盘：10 类真实事故 + 教训 + 外部同类 skill 调研
     ├── scripts/                  纯标准库 Python，无第三方依赖
     │   ├── audit_text.py         列出 SVG 里每个 text 的坐标/字号/锚点/文字
     │   ├── check_overlap.py      文字包围盒 vs 线段/矩形边框：越界与压线检测
+    │   ├── check_consistency.py  视觉语言一致性：同类单元格锚点/字号/分隔线是否同一处理
     │   ├── check_symbols.py      禁用符号与记法扫描（↓ / ＋ / · / >>> / @1 km …）
     │   └── render_svg.py         Edge/Chrome 无头渲染整图或裁切放大（用于目视验收）
     └── assets/
@@ -54,13 +56,16 @@ sk_03/
 # 1) 渲染出来看
 python proposal-pictures/scripts/render_svg.py 图1.svg --png out.png
 
-# 2) 机器自检（越界 / 压线）
+# 2) 几何自检（越界 / 压线）
 python proposal-pictures/scripts/check_overlap.py pictures/*.svg
 
-# 3) 符号与记法检查
+# 3) 视觉语言一致性（同类元素是否同一处理）
+python proposal-pictures/scripts/check_consistency.py pictures/*.svg
+
+# 4) 符号与记法检查
 python proposal-pictures/scripts/check_symbols.py pictures/*.svg
 
-# 4) 文字清单（人工核对措辞与对齐）
+# 5) 文字清单（人工核对措辞与对齐）
 python proposal-pictures/scripts/audit_text.py 图1.svg
 ```
 

@@ -1,8 +1,8 @@
 ---
 name: proposal-pictures
-description: "中文技术申报书/技术方案的配图规范与校验（SVG 优先，可导入 PPT 编辑）：三类图版式（总体框架图、技术路线图、研究计划矩阵）、配色与字体令牌、文字与符号规范、指标表述规范，以及几何自检（文字越界/压线/拼串、禁用符号）与图↔文↔技术方案一致性核对。Triggers on: 画图, 画个图, 配图, 申报书配图, 技术路线图, 总体框架图, 研究计划图, 帮我画图, 检查图片, 检查图片文字, 文字重叠, 图片压线, 文字越界, 图不符合规范, 图片文字错乱, 图与正文不一致, draw diagram, proposal figure, technical roadmap figure, framework figure, check svg text, svg overlap, diagram conventions, 図の作成, 図のチェック, 図の文字, 그림 그리기, 그림 검사, 도표 작성, dibujar diagrama, revisar figura svg, convenciones de figuras."
+description: "中文技术申报书/技术方案的配图规范与校验（SVG 优先，可导入 PPT 编辑）：三类图版式（总体框架图、技术路线图、研究计划矩阵）、配色与字体令牌、文字与符号规范、指标表述规范，以及几何自检（文字越界/压线/拼串、禁用符号）、视觉语言一致性自检（同类元素锚点/字号/分隔线）与图↔文↔技术方案一致性核对。Triggers on: 画图, 画个图, 配图, 申报书配图, 技术路线图, 总体框架图, 研究计划图, 帮我画图, 检查图片, 检查图片文字, 文字重叠, 图片压线, 文字越界, 有的居中有的不居中, 视觉语言混乱, 连线混乱, 图不符合规范, 图片文字错乱, 图与正文不一致, draw diagram, proposal figure, technical roadmap figure, framework figure, check svg text, svg overlap, visual consistency, diagram conventions, 図の作成, 図のチェック, 図の文字, 그림 그리기, 그림 검사, 도표 작성, dibujar diagrama, revisar figura svg, convenciones de figuras."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   last_updated: "2026-10-15"
   status: active
   data_access_level: raw
@@ -85,6 +85,15 @@ python scripts/audit_text.py 图1_总体框架.svg                        # ④ 
     便于日后在 PPT 里按同一坐标重画或导入后微调。
 11. **改动留痕**：改文案/坐标后必须重跑第 4、5 步；自检脚本的命中数从 N→0 才算完成。
 12. **一处改、处处改**：图上改了称谓或指标写法，正文、技术方案、台账同步改，并复算字数。
+13. **连线只用正交折线，箭头只表达因果/对应**：禁斜线与扇形发散线；一对多用"母线"（一路出 → 竖母线 →
+    N 条水平支线），多对一用汇流；**并列项之间不画箭头**（会被读成流程）；标签锚点与 x 统一、放在线的外侧；
+    上下行数量不匹配时（如上行 4 列、下行 3 格）用**通栏 + 分隔线**表达"跨条目"，不要强行对齐。
+    详见 `references/figure-types.md` §5。
+14. **同类元素必须同一处理（设计系统）**：开工前先定"角色 → 锚点/字号/颜色"表
+    （`references/figure-types.md` §6），画完用 `check_consistency.py` 验。
+    三条对齐铁律：**单元格里的东西一律居中于列心；通栏里的段落左对齐；通栏里的并列项等分居中**。
+    同一角色的锚点/字号/分隔线处理不一致 = 视觉语言混乱（真实事故：一张矩阵图 28 处居中、17 处左对齐，
+    几何自检全绿）。
 
 ## 三类图的版式（详见 references/figure-types.md）
 
@@ -120,6 +129,7 @@ python scripts/audit_text.py 图1_总体框架.svg                        # ④ 
 | --- | --- | --- |
 | `scripts/render_svg.py` | 无头浏览器渲染 SVG → PNG，支持裁切放大 | `--png out.png` `--crop "x y w h"` `--scale 2` `--size 1600x900` |
 | `scripts/check_overlap.py` | 文字包围盒 vs 线段/折线/矩形边框，报越界与压线 | `paths...` `--pad 12` `--json` |
+| `scripts/check_consistency.py` | **视觉语言一致性**：同尺寸单元格逐格比对锚点/字号/分隔线，另出字号档位、锚点分布、线宽、图元统计 | `paths...` `--min-cells 2` `--json` |
 | `scripts/check_symbols.py` | 禁用符号/记法扫描（可自定义规则表） | `paths...` `--rules file.json` |
 | `scripts/audit_text.py` | 导出每个 text 的坐标/字号/锚点/字数 | `path` `--md out.md` |
 
@@ -144,10 +154,13 @@ python scripts/audit_text.py 图1_总体框架.svg                        # ④ 
 | 图上自己给指标加"最优/保证" | 验收时被追问依据 | 只写可达成的措辞，限定条件写全 |
 | 直接改导师示例的措辞 | 与上级口径脱节，返工 | 示例原样，差异进对照表 |
 | 称谓各写各的（课题/子课题/研究内容） | 评审看不懂层级，甚至自相矛盾 | 全文一套称谓，先定后用 |
+| 同类元素锚点混用（表头居中、条目左对齐） | 一眼看出"乱"，但几何自检全绿 | 先定设计系统表（§6），画完跑 `check_consistency.py` |
+| 连线直角与斜线混用 / 并列项画箭头 | 视觉语言不统一；把并列讲成流程 | 见硬规则 13 与 `figure-types.md` §5 |
 
 ## Quality Standards（交付前逐条打勾）
 
 - [ ] `check_overlap.py` 命中 **0**（含出框与压线）
+- [ ] `check_consistency.py` 命中 **0**（同类元素锚点/字号/分隔线一致）
 - [ ] `check_symbols.py` 命中 **0**（或每条都有明确豁免理由）
 - [ ] 每张图 `xml.etree.ElementTree.parse` 通过
 - [ ] 无 `<image>`／`<script>`／`foreignObject`／外部字体
@@ -185,6 +198,9 @@ python scripts/audit_text.py 图1_总体框架.svg                        # ④ 
 
 ## Version Info
 
+- **v1.1.0（2026-10-15）**：补「视觉语言一致性」这一环——新增 `scripts/check_consistency.py`、
+  设计系统表与三条对齐铁律（`figure-types.md` §6）、硬规则 13/14、案例复盘（`references/case-notes.md`，
+  含外部同类 skill 调研结论）。
 - v1.0.0（2026-10-15）：从实际申报书项目中提炼。含三类图版式、样式令牌、文字与符号规范、
   指标表述规范、4 个自检脚本、起手模板。
 
@@ -192,4 +208,5 @@ python scripts/audit_text.py 图1_总体框架.svg                        # ④ 
 
 | 版本 | 日期 | 变更 |
 | --- | --- | --- |
+| 1.1.0 | 2026-10-15 | 新增 `check_consistency.py`（同类元素一致性检查）+ 设计系统表 + 硬规则 13（连线语言）、14（设计系统）+ `case-notes.md` 复盘与外部 skill 调研 |
 | 1.0.0 | 2026-10-15 | 首版：五步工作流、12 条硬规则、三类图版式、4 个脚本、模板 |
