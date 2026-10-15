@@ -61,7 +61,7 @@
   <line x1="1020" y1="308" x2="1094" y2="308" stroke="#2F6FB0" stroke-width="2" marker-end="url(#tpl-arrow)"/>
 
   <!-- 带间动作词 -->
-  <line x1="800" y1="386" x2="800" y2="418" stroke="#2F6FB0" stroke-width="2.5"
+  <line x1="800" y1="364" x2="800" y2="460" stroke="#2F6FB0" stroke-width="2.5"
         marker-end="url(#tpl-arrow-down)"/>
   <text x="822" y="410" font-family="Microsoft YaHei, PingFang SC, Source Han Sans SC, SimHei, sans-serif"
         font-size="17" font-weight="bold" fill="#2F6FB0">动作词</text>
