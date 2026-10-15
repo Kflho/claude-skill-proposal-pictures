@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""render_svg.py — 用无头浏览器把 SVG 渲染成 PNG；支持裁切放大（目视验收用）。
+
+用法:
+  python render_svg.py 图1.svg --png out/f1.png
+  python render_svg.py 图1.svg --png out/f1_2x.png --scale 2
+  python render_svg.py 图1.svg --png out/zoom.png --crop "300 540 600 60" --scale 4
+  python render_svg.py 图1.svg --png out/f1.png --browser "C:/path/to/msedge.exe"
+
+--crop "x y w h" 会生成一个临时 SVG（只改 viewBox/width/height），其余内容不动。
+"""
+from __future__ import annotations
+
+import argparse
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+
+try:  # Windows 控制台默认 GBK，打印 ⚠ 等字符会 UnicodeEncodeError
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
+
+CANDIDATES = [
+    r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+    r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+    "google-chrome", "chromium", "chromium-browser", "microsoft-edge", "msedge",
+]
+
+
+def find_browser(explicit=None):
+    if explicit:
+        return explicit if os.path.exists(explicit) or shutil.which(explicit) else None
+    for c in CANDIDATES:
+        if os.path.sep in c or c.endswith(".exe"):
+            if os.path.exists(c):
+                return c
+        elif shutil.which(c):
+            return shutil.which(c)
+    return None
+
+
+def make_crop(src: str, crop: str, scale: float, tmpdir: str) -> str:
+    x, y, w, h = (float(v) for v in crop.split())
+    raw = open(src, encoding="utf-8").read()
+    new = (f'width="{int(w * scale)}" height="{int(h * scale)}" '
+           f'viewBox="{x:g} {y:g} {w:g} {h:g}"')
+    raw2, n = re.subn(r'width="[\d.]+"\s+height="[\d.]+"\s+viewBox="[^"]*"', new, raw, count=1)
+    if n == 0:
+        raw2, n = re.subn(r'viewBox="[^"]*"', f'viewBox="{x:g} {y:g} {w:g} {h:g}"', raw, count=1)
+        if n:
+            raw2 = raw2.replace("<svg ", f'<svg width="{int(w * scale)}" height="{int(h * scale)}" ', 1)
+    out = os.path.join(tmpdir, "crop.svg")
+    open(out, "w", encoding="utf-8").write(raw2)
+    return out
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description="SVG → PNG（无头浏览器）")
+    ap.add_argument("svg")
+    ap.add_argument("--png", required=True)
+    ap.add_argument("--crop", default=None, help='"x y w h"，只渲染该区域')
+    ap.add_argument("--scale", type=float, default=1.0)
+    ap.add_argument("--size", default=None, help="窗口尺寸 WxH（默认按 SVG 尺寸×scale）")
+    ap.add_argument("--browser", default=None)
+    a = ap.parse_args()
+
+    if not os.path.exists(a.svg):
+        print("!! 文件不存在:", a.svg)
+        return 2
+    browser = find_browser(a.browser)
+    if not browser:
+        print("!! 未找到无头浏览器。请用 --browser 指定 msedge/chrome 可执行文件路径，")
+        print("   或改用任何浏览器手动截图（本脚本仅为便利，不阻塞流程）。")
+        return 2
+
+    src = os.path.abspath(a.svg)
+    out = os.path.abspath(a.png)
+    os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
+
+    tmpdir = tempfile.mkdtemp(prefix="render_svg_")
+    try:
+        if a.crop:
+            src = make_crop(src, a.crop, a.scale, tmpdir)
+        else:
+            raw = open(src, encoding="utf-8").read()
+            m = re.search(r'width="([\d.]+)"\s+height="([\d.]+)"', raw)
+            base = (float(m.group(1)), float(m.group(2))) if m else (1600.0, 900.0)
+            size = f"{int(base[0] * a.scale)},{int(base[1] * a.scale)}"
+        if a.crop:
+            x, y, w, h = (float(v) for v in a.crop.split())
+            size = a.size.replace("x", ",") if a.size else f"{int(w * a.scale)},{int(h * a.scale)}"
+        elif a.size:
+            size = a.size.replace("x", ",")
+        url = "file:///" + src.replace("\\", "/")
+        cmd = [browser, "--headless=new", "--disable-gpu", "--hide-scrollbars",
+               f"--window-size={size}", f"--screenshot={out}", url]
+        r = subprocess.run(cmd, capture_output=True)
+        if not os.path.exists(out):
+            print("!! 渲染失败，浏览器输出：")
+            print(r.stderr.decode("utf-8", "replace")[-600:])
+            return 2
+        print(f"✅ {out}  ({os.path.getsize(out) / 1024:.1f} KB, 窗口 {size})")
+        return 0
+    finally:
+        shutil.rmtree(tmpdir, ignore_errors=True)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
