@@ -163,8 +163,8 @@ def check(path, tol, min_len):
 def main() -> int:
     ap = argparse.ArgumentParser(description="SVG 连线端点贴合检查")
     ap.add_argument("paths", nargs="+")
-    ap.add_argument("--tol", type=float, default=1.5, help="允许的端点到边框最大距离（px）")
-    ap.add_argument("--min-len", type=float, default=60, help="只检查长度 ≥ 该值的连线（跳过图内小箭头）")
+    ap.add_argument("--tol", type=float, default=0.5, help="端点到边框最大距离（px）；1~2px 的缝肉眼可见，故默认 0.5")
+    ap.add_argument("--min-len", type=float, default=16, help="只检查长度 ≥ 该值的连线；默认 16，避免漏掉行间短箭头")
     ap.add_argument("--json", default=None)
     a = ap.parse_args()
 

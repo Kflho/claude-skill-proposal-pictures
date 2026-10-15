@@ -2,7 +2,7 @@
 name: proposal-pictures
 description: "中文技术申报书/技术方案的配图规范与校验（SVG 优先，可导入 PPT 编辑）：三类图版式（总体框架图、技术路线图、研究计划矩阵）、配色与字体令牌、文字与符号规范、指标表述规范，以及几何自检（文字越界/压线/拼串、禁用符号）、视觉语言一致性自检（同类元素锚点/字号/分隔线）与图↔文↔技术方案一致性核对。Triggers on: 画图, 画个图, 配图, 申报书配图, 技术路线图, 总体框架图, 研究计划图, 帮我画图, 检查图片, 检查图片文字, 文字重叠, 图片压线, 文字越界, 有的居中有的不居中, 视觉语言混乱, 连线混乱, 图不符合规范, 图片文字错乱, 图与正文不一致, draw diagram, proposal figure, technical roadmap figure, framework figure, check svg text, svg overlap, visual consistency, diagram conventions, 図の作成, 図のチェック, 図の文字, 그림 그리기, 그림 검사, 도표 작성, dibujar diagrama, revisar figura svg, convenciones de figuras."
 metadata:
-  version: "1.1.5"
+  version: "1.1.6"
   last_updated: "2026-10-15"
   status: active
   data_access_level: raw
@@ -134,6 +134,7 @@ python scripts/audit_text.py 图1_总体框架.svg                        # ④ 
 | `scripts/render_svg.py` | 无头浏览器渲染 SVG → PNG，支持裁切放大 | `--png out.png` `--crop "x y w h"` `--scale 2` `--size 1600x900` |
 | `scripts/check_overlap.py` | 文字包围盒 vs 线段/折线/矩形边框，报越界与压线 | `paths...` `--pad 12` `--json` |
 | `scripts/check_consistency.py` | **视觉语言一致性**：同尺寸单元格逐格比对锚点/字号/分隔线，另出字号档位、锚点分布、线宽、图元统计 | `paths...` `--min-cells 2` `--json` |
+| `scripts/check_spacing.py` | **框间距审计**：相邻框净距分布，不在约定档位（S=12/G=24/T=32）上的标出 | `paths...` `--scale 12,24,32` `--tol 2` |
 | `scripts/check_connectors.py` | **连线端点贴合**：每个端点距最近方框边界的像素距离，悬空即报并给吸附坐标（端点接在母线上视为合规） | `paths...` `--tol 1.5` `--min-len 60` |
 | `scripts/check_symbols.py` | 禁用符号/记法扫描（可自定义规则表） | `paths...` `--rules file.json` |
 | `scripts/audit_text.py` | 导出每个 text 的坐标/字号/锚点/字数 | `path` `--md out.md` |
@@ -167,6 +168,7 @@ python scripts/audit_text.py 图1_总体框架.svg                        # ④ 
 - [ ] `check_overlap.py` 命中 **0**（含出框与压线）
 - [ ] `check_connectors.py` 命中 **0**（连线两端都贴在方框/层带边界上）
 - [ ] `check_consistency.py` 命中 **0**（同类元素锚点/字号/分隔线一致）
+- [ ] `check_spacing.py` 命中 **0**（或例外已写入结构说明）
 - [ ] `check_symbols.py` 命中 **0**（或每条都有明确豁免理由）
 - [ ] 每张图 `xml.etree.ElementTree.parse` 通过
 - [ ] 无 `<image>`／`<script>`／`foreignObject`／外部字体
