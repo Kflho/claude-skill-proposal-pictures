@@ -57,8 +57,8 @@
   <text x="1320" y="320" font-family="Microsoft YaHei, PingFang SC, Source Han Sans SC, SimHei, sans-serif"
         font-size="15" fill="#4B5563" text-anchor="middle">说明行</text>
 
-  <line x1="500" y1="308" x2="574" y2="308" stroke="#2F6FB0" stroke-width="2" marker-end="url(#tpl-arrow)"/>
-  <line x1="1020" y1="308" x2="1094" y2="308" stroke="#2F6FB0" stroke-width="2" marker-end="url(#tpl-arrow)"/>
+  <line x1="500" y1="308" x2="580" y2="308" stroke="#2F6FB0" stroke-width="2" marker-end="url(#tpl-arrow)"/>
+  <line x1="1020" y1="308" x2="1100" y2="308" stroke="#2F6FB0" stroke-width="2" marker-end="url(#tpl-arrow)"/>
 
   <!-- 带间动作词 -->
   <line x1="410" y1="364" x2="410" y2="460" stroke="#2F6FB0" stroke-width="2.5"
