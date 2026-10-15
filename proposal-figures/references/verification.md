@@ -68,6 +68,10 @@ python scripts/render_svg.py 图1.svg --png out/zoom.png --crop "300 540 600 60"
 
 ## 5. 与正文的一致性核对（图改完后必做）
 
+> **这套目视方法对数据图同样适用**：`paper-experiment` 的"出图后必须看图"可用同一手法——
+> 可疑区域裁切放大（PNG 用任意看图器或图像库放大），并换一个查看器复核。
+> 区别只在于数据图没有 SVG 可查几何，越框/超宽要靠出图脚本的告警（如 `run_visualization` 的标题超宽告警）。
+
 ```bash
 # 图内文字与正文对不上时，用文本 diff 逐字比
 python scripts/audit_text.py 图1.svg --md out/f1_text.md
