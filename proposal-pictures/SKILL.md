@@ -1,5 +1,5 @@
 ---
-name: proposal-figures
+name: proposal-pictures
 description: "中文技术申报书/技术方案的配图规范与校验（SVG 优先，可导入 PPT 编辑）：三类图版式（总体框架图、技术路线图、研究计划矩阵）、配色与字体令牌、文字与符号规范、指标表述规范，以及几何自检（文字越界/压线/拼串、禁用符号）与图↔文↔技术方案一致性核对。Triggers on: 画图, 画个图, 配图, 申报书配图, 技术路线图, 总体框架图, 研究计划图, 帮我画图, 检查图片, 检查图片文字, 文字重叠, 图片压线, 文字越界, 图不符合规范, 图片文字错乱, 图与正文不一致, draw diagram, proposal figure, technical roadmap figure, framework figure, check svg text, svg overlap, diagram conventions, 図の作成, 図のチェック, 図の文字, 그림 그리기, 그림 검사, 도표 작성, dibujar diagrama, revisar figura svg, convenciones de figuras."
 metadata:
   version: "1.0.0"
@@ -12,7 +12,7 @@ metadata:
     - academic-paper-reviewer
 ---
 
-# Proposal Figures v1.0.0 — 中文申报书配图规范与校验
+# Proposal Pictures v1.0.0 — 中文申报书配图规范与校验
 
 把手写的"看着差不多就行"变成**可机器校验**的图画流程：结构先定、文案先定、画完必自检、交付必目视。
 

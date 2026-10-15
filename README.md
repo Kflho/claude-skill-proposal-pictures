@@ -1,4 +1,4 @@
-# sk_03 · Proposal Figures
+# sk_03 · Proposal Pictures
 
 中文技术申报书 / 技术方案**配图标配**（SVG 优先，可导入 PPT 编辑）的 Claude Code skill 仓库。
 
@@ -10,20 +10,20 @@
 
 ```bash
 mkdir -p <项目>/.claude/skills
-cp -r proposal-figures <项目>/.claude/skills/
+cp -r proposal-pictures <项目>/.claude/skills/
 ```
 
 **用户级**（所有项目可用）：
 
 ```bash
 # macOS / Linux
-mkdir -p ~/.claude/skills && cp -r proposal-figures ~/.claude/skills/
+mkdir -p ~/.claude/skills && cp -r proposal-pictures ~/.claude/skills/
 # Windows PowerShell
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills" | Out-Null
-Copy-Item -Recurse proposal-figures "$env:USERPROFILE\.claude\skills\"
+Copy-Item -Recurse proposal-pictures "$env:USERPROFILE\.claude\skills\"
 ```
 
-装好后，Claude Code 会在命中触发词（画图 / 配图 / 技术路线图 / 检查图片文字 …）时自动加载 `proposal-figures/SKILL.md`。
+装好后，Claude Code 会在命中触发词（画图 / 配图 / 技术路线图 / 检查图片文字 …）时自动加载 `proposal-pictures/SKILL.md`。
 
 ## 仓库结构
 
@@ -31,7 +31,7 @@ Copy-Item -Recurse proposal-figures "$env:USERPROFILE\.claude\skills\"
 sk_03/
 ├── README.md                     本文件
 ├── LICENSE.txt                   使用许可
-└── proposal-figures/             ← skill 本体（可整个拷进 .claude/skills/）
+└── proposal-pictures/             ← skill 本体（可整个拷进 .claude/skills/）
     ├── SKILL.md                  入口：触发条件、五步工作流、硬规则、自检脚本用法
     ├── references/               按需加载的细节（渐进披露）
     │   ├── figure-types.md       三类图版式：总体框架图 / 技术路线图 / 研究计划矩阵
@@ -52,23 +52,23 @@ sk_03/
 
 ```bash
 # 1) 渲染出来看
-python proposal-figures/scripts/render_svg.py 图1.svg --png out.png
+python proposal-pictures/scripts/render_svg.py 图1.svg --png out.png
 
 # 2) 机器自检（越界 / 压线）
-python proposal-figures/scripts/check_overlap.py pictures/*.svg
+python proposal-pictures/scripts/check_overlap.py pictures/*.svg
 
 # 3) 符号与记法检查
-python proposal-figures/scripts/check_symbols.py pictures/*.svg
+python proposal-pictures/scripts/check_symbols.py pictures/*.svg
 
 # 4) 文字清单（人工核对措辞与对齐）
-python proposal-figures/scripts/audit_text.py 图1.svg
+python proposal-pictures/scripts/audit_text.py 图1.svg
 ```
 
 ## 起手模板长这样
 
-![模板预览](proposal-figures/assets/template_preview.png)
+![模板预览](proposal-pictures/assets/template_preview.png)
 
-（`proposal-figures/assets/template.svg` 渲染结果：标题条 + 上级通栏 + 层次带与模块 + 支撑产出框 + 兄弟部分 + 底部指标通栏 + 图注）
+（`proposal-pictures/assets/template.svg` 渲染结果：标题条 + 上级通栏 + 层次带与模块 + 支撑产出框 + 兄弟部分 + 底部指标通栏 + 图注）
 
 ## 这套规范解决什么问题
 
