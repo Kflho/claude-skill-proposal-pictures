@@ -44,6 +44,7 @@ sk_03/
     │   ├── audit_text.py         列出 SVG 里每个 text 的坐标/字号/锚点/文字
     │   ├── check_overlap.py      文字包围盒 vs 线段/矩形边框：越界与压线检测
     │   ├── check_consistency.py  视觉语言一致性：同类单元格锚点/字号/分隔线是否同一处理
+    │   ├── check_connectors.py   连线端点贴合：端点距方框边界的像素距离，悬空即报
     │   ├── check_symbols.py      禁用符号与记法扫描（↓ / ＋ / · / >>> / @1 km …）
     │   └── render_svg.py         Edge/Chrome 无头渲染整图或裁切放大（用于目视验收）
     └── assets/
@@ -59,7 +60,10 @@ python proposal-pictures/scripts/render_svg.py 图1.svg --png out.png
 # 2) 几何自检（越界 / 压线）
 python proposal-pictures/scripts/check_overlap.py pictures/*.svg
 
-# 3) 视觉语言一致性（同类元素是否同一处理）
+# 3) 连线端点贴合（有没有没接在框上）
+python proposal-pictures/scripts/check_connectors.py pictures/*.svg
+
+# 4) 视觉语言一致性（同类元素是否同一处理）
 python proposal-pictures/scripts/check_consistency.py pictures/*.svg
 
 # 4) 符号与记法检查
@@ -79,6 +83,7 @@ python proposal-pictures/scripts/audit_text.py 图1.svg
 
 | 常见事故 | 本 skill 的对应手段 |
 | --- | --- |
+| **连线没接在方框上（端点悬空几像素）** | check_connectors.py：算出每个端点到最近方框边界的距离，>1.5px 即报并给吸附坐标 |
 | 文字压线 / 撑出方框 | `check_overlap.py` 几何自检（文字盒 vs 线段与矩形边框） |
 | 相邻两根 `tspan` 在某些查看器里拼成一串 | `text-norms.md`：跨行一律拆成独立 `<text>`，行尾补标点 |
 | 图上用了 `↓≥10%` 这类自创记法 | `text-norms.md` 符号禁用表 + `check_symbols.py` |
